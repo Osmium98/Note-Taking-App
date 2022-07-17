@@ -7,15 +7,13 @@ export function AuthStack({ stack, app }) {
   const { bucket } = use(StorageStack);
   const { api } = use(ApiStack);
 
-  // Create a Cognito User Pool and Identity Pool
   const auth = new Auth(stack, "Auth", {
     login: ["email"],
   });
 
   auth.attachPermissionsForAuthUsers(stack, [
-    // Allow access to the API
+   
     api,
-    // Policy granting access to a specific folder in the bucket
     new iam.PolicyStatement({
       actions: ["s3:*"],
       effect: iam.Effect.ALLOW,
@@ -25,7 +23,6 @@ export function AuthStack({ stack, app }) {
     }),
   ]);
 
-  // Show the auth resources in the output
   stack.addOutputs({
     Region: app.region,
     UserPoolId: auth.userPoolId,
