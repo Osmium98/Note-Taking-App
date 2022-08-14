@@ -18,8 +18,8 @@ Amplify.configure({
     oauth: {
       domain: `not-one.auth.ap-south-1.amazoncognito.com`,
       scope: ["email", "profile", "openid", "aws.cognito.signin.user.admin"],
-      redirectSignIn: "http://localhost:3000",
-      redirectSignOut: "http://localhost:3000",
+      redirectSignIn: "https://notone.netlify.app",
+      redirectSignOut: "https://notone.netlify.app",
       responseType: "token",
     },
   },

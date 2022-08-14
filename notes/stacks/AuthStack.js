@@ -25,9 +25,11 @@ export function AuthStack({ stack, app }) {
         oAuth: {
           callbackUrls: [
             "http://localhost:3000",
+            "https://notone.netlify.app"
           ],
           logoutUrls: [
             "http://localhost:3000",
+            "https://notone.netlify.app"
           ],
         },
       },
