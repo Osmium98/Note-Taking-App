@@ -13,9 +13,6 @@ function App() {
   const [isAuthenticated, userHasAuthenticated] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(true);
 
-  const [email, setEmail] = useState("");
-const [password, setPassword] = useState("");
-
   const nav = useNavigate();
 
   useEffect(() => {
@@ -24,7 +21,8 @@ const [password, setPassword] = useState("");
 
   async function onLoad() {
     try {
-      await Auth.currentSession();
+      const data = await Auth.currentSession();
+      console.log(data);
       userHasAuthenticated(true);
     } catch (e) {
       if (e !== "No current user") {
@@ -56,7 +54,12 @@ const [password, setPassword] = useState("");
           <Navbar.Collapse className="justify-content-end">
             <Nav activeKey={window.location.pathname}>
               {isAuthenticated ? (
-                <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+                <>
+                  <LinkContainer to="/settings">
+                    <Nav.Link>Settings</Nav.Link>
+                  </LinkContainer>
+                  <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+                </>
               ) : (
                 <>
                   <LinkContainer to="/signup">

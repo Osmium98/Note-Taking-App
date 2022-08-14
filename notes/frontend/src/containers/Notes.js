@@ -5,6 +5,7 @@ import { onError } from "../lib/errorLib";
 import Form from "react-bootstrap/Form";
 import LoaderButton from "../components/LoaderButton";
 import config from "../config";
+import { s3Upload } from "../lib/awsLib";
 import "./Notes.css";
 
 export default function Notes() {
@@ -28,7 +29,10 @@ export default function Notes() {
 
         if (attachment) {
           note.attachmentURL = await Storage.vault.get(attachment);
+          console.log("DONE");
         }
+
+        console.log(note.attachmentURL);
 
         setContent(content);
         setNote(note);
@@ -43,49 +47,69 @@ export default function Notes() {
   function validateForm() {
     return content.length > 0;
   }
-  
+
   function formatFilename(str) {
     return str.replace(/^\w+-/, "");
   }
-  
+
   function handleFileChange(event) {
     file.current = event.target.files[0];
   }
-  
+
+  function saveNote(note) {
+    return API.put("notes", `/notes/${id}`, {
+      body: note,
+    });
+  }
+
   async function handleSubmit(event) {
     let attachment;
-  
+
     event.preventDefault();
-  
+
     if (file.current && file.current.size > config.MAX_ATTACHMENT_SIZE) {
       alert(
-        `Please pick a file smaller than ${
-          config.MAX_ATTACHMENT_SIZE / 1000000
+        `Please pick a file smaller than ${config.MAX_ATTACHMENT_SIZE / 1000000
         } MB.`
       );
       return;
     }
-  
+
     setIsLoading(true);
+
+    try {
+      if (file.current) {
+        attachment = await s3Upload(file.current);
+      }
+
+      await saveNote({
+        content,
+        attachment: attachment || note.attachment,
+      });
+      nav("/");
+    } catch (e) {
+      onError(e);
+      setIsLoading(false);
+    }
   }
-  
+
   function deleteNote() {
     return API.del("notes", `/notes/${id}`);
   }
-  
+
   async function handleDelete(event) {
     event.preventDefault();
-  
+
     const confirmed = window.confirm(
       "Are you sure you want to delete this note?"
     );
-  
+
     if (!confirmed) {
       return;
     }
-  
+
     setIsDeleting(true);
-  
+
     try {
       await deleteNote();
       nav("/");
@@ -94,7 +118,7 @@ export default function Notes() {
       setIsDeleting(false);
     }
   }
-  
+
   return (
     <div className="Notes">
       {note && (

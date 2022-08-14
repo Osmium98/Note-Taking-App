@@ -3,9 +3,12 @@ import { Auth } from "aws-amplify";
 import Form from "react-bootstrap/Form";
 import LoaderButton from "../components/LoaderButton";
 import { useAppContext } from "../lib/contextLib";
+import { Link } from "react-router-dom";
 import { useFormFields } from "../lib/hooksLib";
 import { onError } from "../lib/errorLib";
 import "./Login.css";
+import FacebookButton from "../components/Signing/FacebookButton";
+import GoogleButton from "../components/Signing/GoogleButton";
 
 export default function Login() {
   const { userHasAuthenticated } = useAppContext();
@@ -27,7 +30,7 @@ export default function Login() {
     try {
       await Auth.signIn(fields.email, fields.password);
       userHasAuthenticated(true);
-     
+
     } catch (e) {
       onError(e);
       setIsLoading(false);
@@ -36,6 +39,8 @@ export default function Login() {
 
   return (
     <div className="Login">
+      <FacebookButton />
+      <GoogleButton />
       <Form onSubmit={handleSubmit}>
         <Form.Group size="lg" controlId="email">
           <Form.Label>Email</Form.Label>
@@ -64,6 +69,7 @@ export default function Login() {
           Login
         </LoaderButton>
       </Form>
+      <Link to="/login/reset">Forgot password?</Link>
     </div>
   );
 }
